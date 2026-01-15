@@ -12,7 +12,7 @@ Complete installation guide for Arch Linux.
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOURUSERNAME/ravenforge.git
+git clone https://github.com/janocic/ravenforge.git
 cd ravenforge
 
 # Run the installer (requires root)
@@ -67,7 +67,7 @@ docker run hello-world
 ### Step 3: Clone Repository
 
 ```bash
-git clone https://github.com/YOURUSERNAME/ravenforge.git
+git clone https://github.com/janocic/ravenforge.git
 cd ravenforge
 ```
 
@@ -283,5 +283,5 @@ paru -S ravenforge
 
 ## Support
 
-- [GitHub Issues](https://github.com/YOURUSERNAME/ravenforge/issues)
-- [Documentation](https://github.com/YOURUSERNAME/ravenforge/tree/main/docs)
+- [GitHub Issues](https://github.com/janocic/ravenforge/issues)
+- [Documentation](https://github.com/janocic/ravenforge/tree/main/docs)

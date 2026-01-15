@@ -4,12 +4,12 @@ pkgver=1.0.0
 pkgrel=1
 pkgdesc="Security Operations Automation Platform"
 arch=('x86_64')
-url="https://github.com/yourusername/ravenforge"
+url="https://github.com/janocic/ravenforge"
 license=('MIT')
 depends=('docker' 'sqlite' 'python' 'python-pip')
 makedepends=('go' 'git')
 backup=('etc/ravenforge/ravenforge.yaml')
-source=("$pkgname-$pkgver.tar.gz::https://github.com/yourusername/ravenforge/archive/v$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/janocic/ravenforge/archive/v$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 build() {

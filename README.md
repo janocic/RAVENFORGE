@@ -44,7 +44,7 @@ RavenForge is an extensible security operations platform that enables teams to b
 #### Quick Install
 
 ```bash
-git clone https://github.com/YOURUSERNAME/ravenforge.git
+git clone https://github.com/janocic/ravenforge.git
 cd ravenforge
 sudo ./scripts/install-arch.sh
 ```
@@ -60,7 +60,7 @@ sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
 
 # Clone and build
-git clone https://github.com/YOURUSERNAME/ravenforge.git
+git clone https://github.com/janocic/ravenforge.git
 cd ravenforge
 make deps
 make build
@@ -99,7 +99,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 
 # Clone and build
-git clone https://github.com/YOURUSERNAME/ravenforge.git
+git clone https://github.com/janocic/ravenforge.git
 cd ravenforge
 make deps && make build
 sudo make install
@@ -117,7 +117,7 @@ sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
 
 # Clone and build
-git clone https://github.com/YOURUSERNAME/ravenforge.git
+git clone https://github.com/janocic/ravenforge.git
 cd ravenforge
 make deps && make build
 sudo make install
@@ -131,7 +131,7 @@ make docker
 brew install go docker sqlite python
 
 # Start Docker Desktop, then:
-git clone https://github.com/YOURUSERNAME/ravenforge.git
+git clone https://github.com/janocic/ravenforge.git
 cd ravenforge
 make deps && make build
 make docker
