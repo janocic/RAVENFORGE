@@ -1,0 +1,45 @@
+id: ingest-jsonlines
+name: JSONL Log Ingester
+version: 1.0.0
+description: |
+  Reads JSONL (JSON Lines) log files, validates their structure, and outputs 
+  normalized events following an ECS-like (Elastic Common Schema) structure.
+  Supports common log formats and performs basic field normalization.
+tool_api_version: "1.0"
+runtime: oci
+
+entrypoint:
+  image: ravenforge/ingest-jsonlines:1.0.0
+  command: ["python", "/app/main.py"]
+  workdir: /app
+
+inputs:
+  - name: logs
+    content_type: application/x-ndjson
+    required: true
+    description: Input JSONL log file to ingest
+
+outputs:
+  - name: events
+    content_type: application/x-ndjson
+    description: Normalized events in ECS-like format
+  - name: stats
+    content_type: application/json
+    description: Ingestion statistics
+
+capabilities:
+  network: false
+  uses_ai: false
+  response_action: false
+  secrets: []
+
+resources:
+  cpu: 1.0
+  memory: 512Mi
+  timeout: 10m
+  max_pids: 50
+
+metadata:
+  category: ingest
+  author: Ravenforge Team
+  tags: logs,jsonl,normalization,ecs

@@ -1,0 +1,49 @@
+id: detect-simple-rules
+name: Simple Rule-Based Detector
+version: 1.0.0
+description: |
+  Rule-based detection engine that matches normalized events against YAML-defined 
+  rules. Supports field matching, regex patterns, and threshold-based detection.
+  Outputs detection alerts with matched rule information.
+tool_api_version: "1.0"
+runtime: oci
+
+entrypoint:
+  image: ravenforge/detect-simple-rules:1.0.0
+  command: ["python", "/app/main.py"]
+  workdir: /app
+
+inputs:
+  - name: events
+    content_type: application/x-ndjson
+    required: true
+    description: Normalized events to analyze
+  - name: rules
+    content_type: application/x-yaml
+    required: false
+    description: Custom detection rules (uses built-in if not provided)
+
+outputs:
+  - name: detections
+    content_type: application/x-ndjson
+    description: Detection alerts
+  - name: stats
+    content_type: application/json
+    description: Detection statistics
+
+capabilities:
+  network: false
+  uses_ai: false
+  response_action: false
+  secrets: []
+
+resources:
+  cpu: 1.0
+  memory: 512Mi
+  timeout: 10m
+  max_pids: 50
+
+metadata:
+  category: detect
+  author: Ravenforge Team
+  tags: detection,rules,alerts

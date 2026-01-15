@@ -1,0 +1,891 @@
+openapi: 3.0.3
+info:
+  title: Ravenforge API
+  description: |
+    REST API for the Ravenforge cybersecurity platform.
+    
+    Ravenforge is an open-source, tool-based security platform that provides:
+    - Secure tool execution in sandboxed containers
+    - Pipeline-based orchestration of security workflows
+    - Full audit logging for SOC compliance
+    - Policy-based access control
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: Ravenforge Team
+    url: https://github.com/ravenforge/ravenforge
+
+servers:
+  - url: http://localhost:7433
+    description: Local development server
+
+tags:
+  - name: tools
+    description: Tool management
+  - name: runs
+    description: Tool execution
+  - name: pipelines
+    description: Pipeline execution
+  - name: jobs
+    description: Job management
+  - name: artifacts
+    description: Artifact storage
+  - name: audit
+    description: Audit logs
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check if the daemon is healthy
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+
+  /v1/tools:
+    get:
+      tags:
+        - tools
+      summary: List all tools
+      description: Returns all registered tools
+      operationId: listTools
+      responses:
+        '200':
+          description: List of tools
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tool'
+
+  /v1/tools/{id}:
+    get:
+      tags:
+        - tools
+      summary: Get tool details
+      description: Returns detailed information about a specific tool
+      operationId: getTool
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Tool ID
+        - name: version
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Specific version (latest if not specified)
+      responses:
+        '200':
+          description: Tool details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tool'
+        '404':
+          description: Tool not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/runs:
+    post:
+      tags:
+        - runs
+      summary: Submit a tool run
+      description: Submit a tool for execution
+      operationId: submitRun
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitRunRequest'
+      responses:
+        '202':
+          description: Run accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitRunResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/runs/{runId}:
+    get:
+      tags:
+        - runs
+      summary: Get run status
+      description: Get the status and details of a run
+      operationId: getRun
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Run details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          description: Run not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/pipelines:
+    post:
+      tags:
+        - pipelines
+      summary: Submit a pipeline
+      description: Submit a pipeline for execution
+      operationId: submitPipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPipelineRequest'
+      responses:
+        '202':
+          description: Pipeline accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineRun'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/jobs:
+    get:
+      tags:
+        - jobs
+      summary: List jobs
+      description: List all jobs with optional filtering
+      operationId: listJobs
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [QUEUED, RUNNING, SUCCEEDED, FAILED, CANCELED]
+        - name: tool_id
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+
+  /v1/jobs/{jobId}:
+    get:
+      tags:
+        - jobs
+      summary: Get job status
+      description: Get the status of a specific job
+      operationId: getJob
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/jobs/{jobId}/cancel:
+    post:
+      tags:
+        - jobs
+      summary: Cancel a job
+      description: Cancel a queued or running job
+      operationId: cancelJob
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job canceled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: canceled
+
+  /v1/artifacts/{artifactId}:
+    get:
+      tags:
+        - artifacts
+      summary: Get artifact metadata
+      description: Get metadata for an artifact
+      operationId: getArtifact
+      parameters:
+        - name: artifactId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artifact metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Artifact'
+        '404':
+          description: Artifact not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/artifacts/{artifactId}/data:
+    get:
+      tags:
+        - artifacts
+      summary: Download artifact data
+      description: Download the raw artifact data
+      operationId: getArtifactData
+      parameters:
+        - name: artifactId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artifact data
+          headers:
+            X-Artifact-Hash:
+              schema:
+                type: string
+              description: SHA256 hash of the artifact
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Artifact not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/audit/tail:
+    get:
+      tags:
+        - audit
+      summary: Tail audit logs
+      description: Get recent audit log entries
+      operationId: auditTail
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+        - name: since
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+          description: Get entries after this sequence number
+      responses:
+        '200':
+          description: Audit entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditEntry'
+
+  /v1/stats:
+    get:
+      tags:
+        - stats
+      summary: Get system statistics
+      description: Get current system statistics
+      operationId: getStats
+      responses:
+        '200':
+          description: System statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+
+components:
+  schemas:
+    Tool:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ingest-jsonlines
+        name:
+          type: string
+          example: JSONL Ingester
+        version:
+          type: string
+          example: "1.0.0"
+        description:
+          type: string
+        runtime:
+          type: string
+          enum: [oci, wasi]
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/IOSpec'
+        outputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/IOSpec'
+        capabilities:
+          $ref: '#/components/schemas/Capabilities'
+        resources:
+          $ref: '#/components/schemas/Resources'
+        digest:
+          type: string
+
+    IOSpec:
+      type: object
+      properties:
+        name:
+          type: string
+        content_type:
+          type: string
+        schema_ref:
+          type: string
+        required:
+          type: boolean
+        description:
+          type: string
+
+    Capabilities:
+      type: object
+      properties:
+        network:
+          type: boolean
+        uses_ai:
+          type: boolean
+        response_action:
+          type: boolean
+        secrets:
+          type: array
+          items:
+            type: string
+
+    Resources:
+      type: object
+      properties:
+        cpu:
+          type: number
+        memory:
+          type: string
+        timeout:
+          type: string
+        max_pids:
+          type: integer
+
+    SubmitRunRequest:
+      type: object
+      required:
+        - tool_id
+      properties:
+        tool_id:
+          type: string
+        tool_version:
+          type: string
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+          description: Map of input name to artifact ID
+        params:
+          type: object
+          additionalProperties: true
+
+    SubmitRunResponse:
+      type: object
+      properties:
+        run_id:
+          type: string
+        job_id:
+          type: string
+
+    SubmitPipelineRequest:
+      type: object
+      required:
+        - pipeline
+      properties:
+        pipeline:
+          $ref: '#/components/schemas/Pipeline'
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+
+    Pipeline:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/PipelineInput'
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PipelineNode'
+        outputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/PipelineOutput'
+
+    PipelineInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        required:
+          type: boolean
+
+    PipelineNode:
+      type: object
+      properties:
+        id:
+          type: string
+        tool_id:
+          type: string
+        tool_version:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeInput'
+        params:
+          type: object
+          additionalProperties: true
+
+    NodeInput:
+      type: object
+      properties:
+        name:
+          type: string
+        from_node:
+          type: string
+        from_output:
+          type: string
+        from_input:
+          type: string
+
+    PipelineOutput:
+      type: object
+      properties:
+        name:
+          type: string
+        from_node:
+          type: string
+        from_output:
+          type: string
+
+    PipelineRun:
+      type: object
+      properties:
+        id:
+          type: string
+        pipeline_id:
+          type: string
+        pipeline_name:
+          type: string
+        status:
+          type: string
+          enum: [RUNNING, SUCCEEDED, FAILED, CANCELED]
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+        outputs:
+          type: object
+          additionalProperties:
+            type: string
+        node_runs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/NodeRun'
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        error:
+          type: string
+
+    NodeRun:
+      type: object
+      properties:
+        node_id:
+          type: string
+        tool_id:
+          type: string
+        status:
+          type: string
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+        outputs:
+          type: object
+          additionalProperties:
+            type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        error:
+          type: string
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        tool_id:
+          type: string
+        tool_version:
+          type: string
+        status:
+          type: string
+          enum: [QUEUED, RUNNING, SUCCEEDED, FAILED, CANCELED]
+        params:
+          type: object
+          additionalProperties: true
+        input_artifacts:
+          type: object
+          additionalProperties:
+            type: string
+        output_artifacts:
+          type: object
+          additionalProperties:
+            type: string
+        pipeline_id:
+          type: string
+        node_id:
+          type: string
+        priority:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        exit_code:
+          type: integer
+        error:
+          type: string
+        run_id:
+          type: string
+
+    Artifact:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        content_type:
+          type: string
+        schema_version:
+          type: string
+        hash:
+          type: string
+        size:
+          type: integer
+          format: int64
+        producer_run_id:
+          type: string
+        producer_tool:
+          type: string
+        pipeline_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    AuditEntry:
+      type: object
+      properties:
+        seq_num:
+          type: integer
+          format: int64
+        timestamp:
+          type: string
+        event_type:
+          type: string
+        actor:
+          $ref: '#/components/schemas/Actor'
+        tool:
+          $ref: '#/components/schemas/ToolInfo'
+        run:
+          $ref: '#/components/schemas/RunInfo'
+        job:
+          $ref: '#/components/schemas/JobInfo'
+        pipeline:
+          $ref: '#/components/schemas/PipelineInfo'
+        artifacts:
+          $ref: '#/components/schemas/ArtifactHashes'
+        sandbox:
+          $ref: '#/components/schemas/SandboxInfo'
+        policy:
+          $ref: '#/components/schemas/PolicyDecision'
+        data:
+          type: object
+          additionalProperties: true
+        prev_hash:
+          type: string
+        hash:
+          type: string
+
+    Actor:
+      type: object
+      properties:
+        type:
+          type: string
+        identity:
+          type: string
+        token:
+          type: string
+        ip:
+          type: string
+
+    ToolInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        version:
+          type: string
+        digest:
+          type: string
+
+    RunInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        duration:
+          type: integer
+          format: int64
+        exit_code:
+          type: integer
+        error_msg:
+          type: string
+        stdout_hash:
+          type: string
+        stderr_hash:
+          type: string
+
+    JobInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+
+    PipelineInfo:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        nodes:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+
+    ArtifactHashes:
+      type: object
+      properties:
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+        outputs:
+          type: object
+          additionalProperties:
+            type: string
+
+    SandboxInfo:
+      type: object
+      properties:
+        runtime:
+          type: string
+        image:
+          type: string
+        cpu_limit:
+          type: number
+        memory_limit:
+          type: integer
+          format: int64
+        pids_limit:
+          type: integer
+          format: int64
+        network:
+          type: boolean
+        read_only:
+          type: boolean
+        mounts:
+          type: array
+          items:
+            type: string
+        timeout:
+          type: string
+
+    PolicyDecision:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+        policy_version:
+          type: string
+        matched_rules:
+          type: array
+          items:
+            type: string
+        reason:
+          type: string
+        required_gates:
+          type: array
+          items:
+            type: string
+
+    Stats:
+      type: object
+      properties:
+        tools:
+          type: integer
+        scheduler:
+          type: object
+          properties:
+            total:
+              type: integer
+            queued:
+              type: integer
+            running:
+              type: integer
+            succeeded:
+              type: integer
+            failed:
+              type: integer
+        artifacts:
+          type: object
+          properties:
+            count:
+              type: integer
+            size:
+              type: integer
+              format: int64
+        audit_seq:
+          type: integer
+          format: int64
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+        details:
+          type: string

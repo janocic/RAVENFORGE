@@ -1,0 +1,31 @@
+[Unit]
+Description=RavenForge Security Operations Daemon
+Documentation=https://github.com/yourusername/ravenforge
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=ravenforge
+Group=ravenforge
+ExecStart=/usr/local/bin/ravenforged --config /etc/ravenforge/ravenforge.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/ravenforge /var/log/ravenforge
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Environment
+Environment=HOME=/var/lib/ravenforge
+
+[Install]
+WantedBy=multi-user.target

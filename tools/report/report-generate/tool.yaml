@@ -1,0 +1,51 @@
+id: report-generate
+name: Report Generator
+version: 1.0.0
+description: |
+  Generates security reports from incidents and detections.
+  Supports multiple output formats including JSON, Markdown, and HTML.
+tool_api_version: "1.0"
+runtime: oci
+
+entrypoint:
+  image: ravenforge/report-generate:1.0.0
+  command: ["python", "/app/main.py"]
+  workdir: /app
+
+inputs:
+  - name: incidents
+    content_type: application/x-ndjson
+    required: true
+    description: Correlated incidents to include in report
+  - name: detections
+    content_type: application/x-ndjson
+    required: false
+    description: Raw detections for detailed analysis
+
+outputs:
+  - name: report
+    content_type: text/markdown
+    description: Generated report in specified format
+  - name: report_json
+    content_type: application/json
+    description: Report data in JSON format
+  - name: executive_summary
+    content_type: text/plain
+    description: Executive summary for leadership
+
+capabilities:
+  network: false
+  uses_ai: false
+  response_action: false
+  secrets: []
+
+resources:
+  cpu: 0.25
+  memory: 256Mi
+  timeout: 2m
+  max_pids: 50
+
+metadata:
+  category: report
+  author: Ravenforge Team
+  tags: reporting,incidents,analysis

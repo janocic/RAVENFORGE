@@ -1,0 +1,58 @@
+# ravenforge.yaml - RavenForge daemon configuration for Linux
+
+# Tool directories to scan for manifests
+tool_dirs:
+  - /var/lib/ravenforge/tools
+  - /usr/share/ravenforge/tools
+
+# API Server configuration
+server:
+  host: "127.0.0.1"
+  port: 7433
+  timeout: 30s
+
+# Artifact storage configuration
+artifacts:
+  base_dir: /var/lib/ravenforge/artifacts
+  max_size: 10737418240  # 10GB
+
+# Audit logging configuration
+audit:
+  log_path: /var/log/ravenforge/audit.jsonl
+  enabled: true
+  max_size_mb: 100
+  max_backups: 10
+  max_age_days: 90
+
+# Policy engine configuration
+policy:
+  policy_file: /etc/ravenforge/policy.yaml
+  default_mode: enforce
+
+# Job scheduler configuration
+scheduler:
+  workers: 4
+  max_queue_size: 1000
+  default_timeout: 5m
+
+# Container sandbox configuration
+sandbox:
+  runtime: docker
+  docker_socket: /var/run/docker.sock
+  default_network: none
+  default_limits:
+    cpu_limit: 1.0
+    memory_limit: 536870912  # 512MB
+    pids_limit: 100
+    timeout: 5m
+
+# Database configuration
+database:
+  driver: sqlite3
+  path: /var/lib/ravenforge/ravenforge.db
+
+# Logging configuration
+logging:
+  level: info
+  format: json
+  file: ""  # empty = stdout

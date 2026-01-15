@@ -1,0 +1,67 @@
+# ravenforge.yaml - RavenForge daemon configuration
+#
+# Copy this file to ravenforge.yaml and modify as needed.
+
+# API Server configuration
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+# Artifact storage configuration
+artifacts:
+  # Path to store artifact files
+  store_path: "/var/lib/ravenforge/artifacts"
+  # Maximum artifact size (10GB)
+  max_size_bytes: 10737418240
+  # Days to retain artifacts
+  retention_days: 30
+
+# Audit logging configuration
+audit:
+  # Audit log file path
+  log_path: "/var/log/ravenforge/audit.jsonl"
+  # Maximum log file size before rotation (100MB)
+  max_size_bytes: 104857600
+  # Number of rotated logs to keep
+  rotate_count: 10
+
+# Policy engine configuration
+policy:
+  # Directory containing policy files
+  path: "/etc/ravenforge/policies"
+  # Default behavior when no policy matches
+  # WARNING: Set to false in production!
+  default_allow: false
+
+# Job scheduler configuration
+scheduler:
+  # Number of worker goroutines
+  workers: 4
+  # Maximum queued jobs
+  queue_size: 100
+
+# Container sandbox configuration
+sandbox:
+  # Docker socket path
+  docker_host: "unix:///var/run/docker.sock"
+  # Network mode for containers (none, bridge, host)
+  # WARNING: Use "none" in production for security!
+  network_mode: "none"
+  # Default memory limit
+  memory_limit: "1G"
+  # Default CPU limit (cores)
+  cpu_limit: "2.0"
+  # Default execution timeout (seconds)
+  default_timeout: 300
+
+# Database configuration
+database:
+  # SQLite database path
+  path: "/var/lib/ravenforge/ravenforge.db"
+
+# Logging configuration
+logging:
+  # Log level: debug, info, warn, error
+  level: "info"
+  # Log format: json, console
+  format: "json"

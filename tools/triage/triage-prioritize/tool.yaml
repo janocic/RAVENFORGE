@@ -1,0 +1,48 @@
+id: triage-prioritize
+name: Incident Triage
+version: 1.0.0
+description: |
+  Prioritizes incidents based on severity, asset criticality, and context.
+  Assigns priority scores and recommended response times.
+tool_api_version: "1.0"
+runtime: oci
+
+entrypoint:
+  image: ravenforge/triage-prioritize:1.0.0
+  command: ["python", "/app/main.py"]
+  workdir: /app
+
+inputs:
+  - name: incidents
+    content_type: application/x-ndjson
+    required: true
+    description: Incidents to prioritize
+  - name: asset_inventory
+    content_type: application/json
+    required: false
+    description: Optional asset criticality data
+
+outputs:
+  - name: prioritized
+    content_type: application/x-ndjson
+    description: Incidents with priority assignments
+  - name: queue
+    content_type: application/json
+    description: Prioritized incident queue for analysts
+
+capabilities:
+  network: false
+  uses_ai: false
+  response_action: false
+  secrets: []
+
+resources:
+  cpu: 0.25
+  memory: 256Mi
+  timeout: 2m
+  max_pids: 50
+
+metadata:
+  category: triage
+  author: Ravenforge Team
+  tags: triage,prioritization,incidents

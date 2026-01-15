@@ -1,0 +1,48 @@
+# Security Detection Rules
+
+rules:
+  - id: brute-force-login
+    name: Brute Force Login Attack
+    severity: high
+    description: Multiple failed login attempts from same IP
+    conditions:
+      - field: message
+        contains: "Failed login attempt"
+      - field: level
+        equals: "warn"
+    threshold:
+      count: 3
+      window: 60s
+      group_by: ip
+    
+  - id: sql-injection
+    name: SQL Injection Attempt
+    severity: critical
+    description: Potential SQL injection detected
+    conditions:
+      - field: message
+        regex: "(?i)(union|select|drop|insert|update|delete).*(?i)(table|from|where)"
+    
+  - id: directory-traversal
+    name: Directory Traversal Attack
+    severity: high
+    description: Attempt to access files outside web root
+    conditions:
+      - field: path
+        regex: "\\.\\.[\\/]"
+    
+  - id: xss-attempt
+    name: Cross-Site Scripting Attempt
+    severity: medium
+    description: Potential XSS payload detected
+    conditions:
+      - field: payload
+        regex: "(?i)<script|javascript:|onerror="
+    
+  - id: command-injection
+    name: Command Injection Attempt
+    severity: critical
+    description: Attempt to execute system commands
+    conditions:
+      - field: command
+        regex: "(?i)(cat|ls|whoami|chmod|rm|wget|curl) "

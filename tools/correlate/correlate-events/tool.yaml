@@ -1,0 +1,48 @@
+id: correlate-events
+name: Event Correlator
+version: 1.0.0
+description: |
+  Correlates related events based on common fields and time windows.
+  Groups events into incidents and calculates aggregate risk scores.
+tool_api_version: "1.0"
+runtime: oci
+
+entrypoint:
+  image: ravenforge/correlate-events:1.0.0
+  command: ["python", "/app/main.py"]
+  workdir: /app
+
+inputs:
+  - name: events
+    content_type: application/x-ndjson
+    required: true
+    description: Events or detections to correlate
+
+outputs:
+  - name: incidents
+    content_type: application/x-ndjson
+    description: Correlated incident groups
+  - name: timeline
+    content_type: application/json
+    description: Timeline of correlated activity
+  - name: stats
+    content_type: application/json
+    description: Correlation statistics
+
+
+capabilities:
+  network: false
+  uses_ai: false
+  response_action: false
+  secrets: []
+
+resources:
+  cpu: 0.5
+  memory: 1Gi
+  timeout: 10m
+  max_pids: 50
+
+metadata:
+  category: correlate
+  author: Ravenforge Team
+  tags: correlation,incidents,timeline

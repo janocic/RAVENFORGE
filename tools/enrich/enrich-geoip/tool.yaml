@@ -1,0 +1,48 @@
+id: enrich-geoip
+name: GeoIP Enricher
+version: 1.0.0
+description: |
+  Enriches IP addresses in events with geographic and ASN information.
+  Uses local MaxMind GeoLite2 database or fallback to ip-api.com.
+tool_api_version: "1.0"
+runtime: oci
+
+entrypoint:
+  image: ravenforge/enrich-geoip:1.0.0
+  command: ["python", "/app/main.py"]
+  workdir: /app
+
+inputs:
+  - name: events
+    content_type: application/x-ndjson
+    required: true
+    description: Events containing IP addresses to enrich
+  - name: geoip_db
+    content_type: application/octet-stream
+    required: false
+    description: Optional MaxMind GeoLite2-City.mmdb database
+
+outputs:
+  - name: enriched_events
+    content_type: application/x-ndjson
+    description: Events with geo information added
+  - name: stats
+    content_type: application/json
+    description: Enrichment statistics
+
+capabilities:
+  network: false
+  uses_ai: false
+  response_action: false
+  secrets: []
+
+resources:
+  cpu: 0.5
+  memory: 512Mi
+  timeout: 5m
+  max_pids: 50
+
+metadata:
+  category: enrich
+  author: Ravenforge Team
+  tags: geoip,enrichment,asn

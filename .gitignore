@@ -1,0 +1,65 @@
+# Build artifacts
+core/ravenforged
+core/ravenforge
+core/ravenforged.exe
+core/ravenforge.exe
+core/bin/
+*.exe
+
+# Go
+core/vendor/
+go.work
+
+# Coverage
+*.out
+coverage.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test data
+test-output/
+test-data/
+
+# Local config
+core/config/ravenforge.yaml
+!core/config/ravenforge.example.yaml
+!core/config/ravenforge.linux.yaml
+
+# Data directories (when testing locally)
+data/
+
+# Docker
+.docker/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+
+# Distribution
+dist/
+*.tar.gz
+*.zip
+
+# AUR
+src/
+pkg/
+*.pkg.tar.zst
