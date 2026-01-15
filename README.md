@@ -143,15 +143,15 @@ make docker
 
 ### Core Platform
 
-- 🛠️ **Tool Registry** - Discover, register, and manage security tools
-- 📦 **Artifact Store** - Content-addressable storage with SHA256 verification
-- 📝 **Audit Logger** - Append-only log with cryptographic hash chain
-- 🔒 **Policy Engine** - Evaluate and enforce tool permissions
-- 🐳 **Sandbox Runner** - Secure OCI container execution
-- ⏰ **Job Scheduler** - Async job queue with persistence
-- 🔄 **Pipeline Executor** - DAG-based workflow orchestration
-- 🌐 **REST API** - Full-featured API with OpenAPI specification
-- 💻 **CLI** - Comprehensive command-line interface
+-  **Tool Registry** - Discover, register, and manage security tools
+-  **Artifact Store** - Content-addressable storage with SHA256 verification
+-  **Audit Logger** - Append-only log with cryptographic hash chain
+-  **Policy Engine** - Evaluate and enforce tool permissions
+-  **Sandbox Runner** - Secure OCI container execution
+-  **Job Scheduler** - Async job queue with persistence
+-  **Pipeline Executor** - DAG-based workflow orchestration
+-  **REST API** - Full-featured API with OpenAPI specification
+-  **CLI** - Comprehensive command-line interface
 
 ### Reference Tools
 
@@ -221,13 +221,13 @@ ravenforge pipeline run ./pipelines/detection-pipeline.yaml \
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                           RavenForge                                 │
+│                           RavenForge                                │
 ├─────────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │
-│  │   REST API  │  │     CLI     │  │   Go SDK    │  │ Python SDK │ │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └─────┬──────┘ │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌────────────┐  │
+│  │   REST API  │  │     CLI     │  │   Go SDK    │  │ Python SDK │  │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └─────┬──────┘  │
 ├─────────┴────────────────┴────────────────┴───────────────┴─────────┤
-│                            Daemon Core                               │
+│                            Daemon Core                              │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │   │
 │  │  │ Registry │ │ Artifact │ │  Audit   │ │  Policy Engine   │ │   │
@@ -239,7 +239,7 @@ ravenforge pipeline run ./pipelines/detection-pipeline.yaml \
 │  │  └──────────┘ └──────────┘ └──────────────────────────────┘  │   │
 │  └──────────────────────────────────────────────────────────────┘   │
 ├─────────────────────────────────────────────────────────────────────┤
-│                          Tool Containers                             │
+│                          Tool Containers                            │
 │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────────┐    │
 │  │  ingest-*  │ │  detect-*  │ │  enrich-*  │ │  correlate-*   │    │
 │  └────────────┘ └────────────┘ └────────────┘ └────────────────┘    │
