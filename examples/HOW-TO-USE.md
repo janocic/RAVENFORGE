@@ -1,100 +1,114 @@
-# Kako Koristiti RavenForge - Praktični Vodič
+# Kako koristiti RavenForge – praktični vodič
 
-## 🎯 Šta RavenForge Radi?
+## Što RavenForge radi?
 
-RavenForge je **automatizovana SOC (Security Operations Center) platforma**. Zameni:
-- Ručno čitanje logova → Automatska analiza
-- Copy-paste između alata → Automatski pipeline
-- Ručno pisanje izveštaja → Auto-generisani reporti
-- Propuštene sigurnosne incidente → Detekcija u realnom vremenu
+RavenForge je automatizirana SOC (Security Operations Center) platforma. Zamjenjuje:
 
-## 💼 Kada Ti Treba?
+- ručno čitanje logova → automatskom analizom
+- kopiranje i lijepljenje između alata → automatiziranim cjevovodom (pipeline)
+- ručno pisanje izvješća → automatski generiranim izvješćima
+- propuštanje sigurnosnih incidenata → detekcijom u stvarnom vremenu
 
-### 1. **Kada Imaš Puno Logova, A Malo Vremena**
+## Kada ti treba?
+
+### 1) Kada imaš puno logova, a malo vremena
+
 ```
-Problem: 10,000 log linija dnevno, ne možeš sve da pročitaš
-Rešenje: RavenForge automatski pronalazi samo važne događaje
-```
-
-### 2. **Kada Moraš Brzo Da Odgovoriš Na Incident**
-```
-Problem: Server napadnut, treba ti instant analiza
-Rešenje: Pipeline ti za 2 minuta da kompletan izveštaj
+Problem: 10 000 linija logova dnevno – ne možeš sve pročitati
+Rješenje: RavenForge automatski pronalazi samo važne događaje
 ```
 
-### 3. **Compliance I Audit**
+### 2) Kada moraš brzo reagirati na incident
+
 ```
-Problem: Trebaš potpuno dokumentovan trail svih sigurnosnih događaja
-Rešenje: RavenForge sve loguje sa kriptografskim hash chain-om
+Problem: poslužitelj je napadnut – treba ti brza analiza
+Rješenje: cjevovod ti za 2 minute daje kompletno izvješće
 ```
 
-### 4. **Kada Gradis Sopstveni SOC**
+### 3) Usklađenost (compliance) i revizija (audit)
+
 ```
-Problem: Commercial SIEM alati su skupi ($50k+ godišnje)
-Rešenje: RavenForge je open-source, besplatan, i možeš ga prilagoditi
+Problem: treba ti potpuno dokumentiran trag svih sigurnosnih događaja
+Rješenje: RavenForge sve bilježi uz kriptografski hash-lanac
+```
+
+### 4) Kada gradiš vlastiti SOC
+
+```
+Problem: komercijalni SIEM alati su skupi (50 000+ USD godišnje)
+Rješenje: RavenForge je open-source, besplatan i možeš ga prilagoditi
 ```
 
 ---
 
-## 📋 Praktični Primer - Security Monitoring
+## Praktičan primjer – sigurnosno nadziranje
 
-### Scenario: Web Server Security
+### Scenarij: sigurnost web poslužitelja
 
-Imaš web aplikaciju i dnevno dobijaš:
-- 5000+ access log linija
-- 200+ error logova  
-- 50+ failed login pokušaja
+Imaš web aplikaciju i dnevno dobivaš:
 
-**Ručno:** 2-3 sata dnevno da analiziraš + propustiš većinu napada
-**Sa RavenForge:** 5 minuta da pokreneš, 100% detekcija
+- 5000+ linija access logova
+- 200+ error logova
+- 50+ pokušaja neuspjele prijave
+
+Ručno: 2–3 sata dnevno za analizu i svejedno propustiš većinu napada.
+
+Uz RavenForge: 5 minuta da pokreneš postupak i dobiješ detekcije.
 
 ---
 
-## 🚀 Korak-Po-Korak Primer
+## Primjer korak po korak
 
-### Korak 1: Pokreni Daemon (jednom)
+### Korak 1: pokreni daemon (jednom)
+
 ```powershell
 cd c:\Users\Gregor\Desktop\RavenForge\core
 .\bin\ravenforged.exe --config config\ravenforge.yaml --log-format console
 ```
 
-### Korak 2: Analiziraj Logove (svaki dan)
+### Korak 2: analiziraj logove (svaki dan)
+
 ```powershell
 # U drugom terminalu
 cd c:\Users\Gregor\Desktop\RavenForge\core
 
-# Pokreni ingest tool - normalizuje sve formate logova
+# Pokreni ingest alat – normalizira sve formate logova
 .\bin\ravenforge.exe run ingest-jsonlines -f ..\examples\real-world-logs.jsonl
 ```
 
-**Šta se dešava:**
-1. Tool učitava JSON logove
-2. Normalizuje ih u standard format (ECS)
-3. Validira sve polja
-4. Output: Čisti, standardizovani eventi
+Što se događa:
 
-### Korak 3: Detektuj Napade
+1. alat učitava JSON logove
+2. normalizira ih u standardni format (ECS)
+3. validira sva polja
+4. izlaz: čisti, standardizirani događaji
+
+### Korak 3: detektiraj napade
+
 ```powershell
-# Pokreni detection sa custom pravilima
+# Pokreni detekciju s prilagođenim pravilima
 .\bin\ravenforge.exe run detect-simple-rules \
   -f normalized-events.jsonl \
   --params '{"rules_file": "..\\examples\\detection-rules.yaml"}'
 ```
 
-**Šta detektuje:**
-- ✅ Brute force napadi (5 pokušaja iz 203.0.113.45)
-- ✅ SQL injection pokušaji
-- ✅ Directory traversal
-- ✅ XSS pokušaji
-- ✅ Command injection
+Što detektira:
 
-### Korak 4: Obogati Podatke
+- brute force napade (npr. 5 pokušaja s 203.0.113.45)
+- pokušaje SQL injectiona
+- directory traversal
+- pokušaje XSS-a
+- command injection
+
+### Korak 4: obogati podatke
+
 ```powershell
-# Dodaj geo info za IP adrese napadača
+# Dodaj geo informacije za IP adrese napadača
 .\bin\ravenforge.exe run enrich-geoip -f detections.jsonl
 ```
 
-**Output:**
+Izlaz:
+
 ```json
 {
   "alert": "Brute Force Attack",
@@ -107,198 +121,216 @@ cd c:\Users\Gregor\Desktop\RavenForge\core
 }
 ```
 
-### Korak 5: Korelacija I Incident
+### Korak 5: korelacija i incident
+
 ```powershell
-# Grupiši povezane napade u incidente
+# Grupiraj povezane napade u incidente
 .\bin\ravenforge.exe run correlate-events -f enriched-alerts.jsonl
 ```
 
-**Rezultat:**
+Rezultat:
+
 ```
-Incident #1: Web Application Attack Campaign
-- 4 napada iz 198.51.100.23
+Incident #1: kampanja napada na web aplikaciju
+- 4 napada s 198.51.100.23
 - SQL injection + XSS + Directory traversal + Command injection
 - Trajanje: 90 sekundi
-- Severity: CRITICAL
+- Ozbiljnost: KRITIČNO
 ```
 
-### Korak 6: Prioritizuj
+### Korak 6: odredi prioritete
+
 ```powershell
-# Dodeli prioritete (P1 = hitno, P4 = low)
+# Dodijeli prioritete (P1 = hitno, P4 = nisko)
 .\bin\ravenforge.exe run triage-prioritize -f incidents.jsonl
 ```
 
-### Korak 7: Generiši Izveštaj
+### Korak 7: generiraj izvješće
+
 ```powershell
-# Kreiraj izveštaj za menadžment
+# Kreiraj izvješće za menadžment
 .\bin\ravenforge.exe run report-generate -f prioritized-incidents.jsonl
 ```
 
-**Output: report.md**
+Izlaz: report.md
+
 ```markdown
-# Security Incident Report
-Date: 2026-01-15
+# Izvješće o sigurnosnom incidentu
+Datum: 2026-01-15
 
-## Executive Summary
-Detected 2 security incidents:
-- 1 Critical: Coordinated web attack (P1)
-- 1 High: Brute force attack (P2)
+## Sažetak za rukovodstvo
+Otkrivena su 2 sigurnosna incidenta:
+- 1 kritični: koordinirani napad na web (P1)
+- 1 visoki: brute force napad (P2)
 
-## Incident #1 - Web Application Attack (CRITICAL)
-- Attacker: 198.51.100.23
-- Attack types: SQL injection, XSS, Directory traversal, Command injection
-- Duration: 90 seconds
-- Recommendation: Block IP immediately, patch application
+## Incident #1 – napad na web aplikaciju (KRITIČNO)
+- Napadač: 198.51.100.23
+- Vrste napada: SQL injection, XSS, directory traversal, command injection
+- Trajanje: 90 sekundi
+- Preporuka: odmah blokirati IP i zakrpati aplikaciju
 
-## Incident #2 - Brute Force Attack (HIGH)
-- Attacker: 203.0.113.45  
-- 5+ failed login attempts
-- Recommendation: Implement rate limiting
+## Incident #2 – brute force napad (VISOKO)
+- Napadač: 203.0.113.45
+- 5+ neuspjelih pokušaja prijave
+- Preporuka: uvesti rate limiting
 ```
 
 ---
 
-## 🔄 Automatizuj Sa Pipeline
+## Automatiziraj s cjevovodom (pipeline)
 
-Umesto da pokrećeš svaki tool ručno, napravi pipeline:
+Umjesto da pokrećeš svaki alat ručno, napravi cjevovod:
 
-**security-pipeline.yaml:**
+security-pipeline.yaml:
+
 ```yaml
 name: daily-security-check
 stages:
   - name: ingest
     tool: ingest-jsonlines
-    
+
   - name: detect
     tool: detect-simple-rules
-    
+
   - name: enrich
     tool: enrich-geoip
-    
+
   - name: correlate
     tool: correlate-events
-    
+
   - name: triage
     tool: triage-prioritize
-    
+
   - name: report
     tool: report-generate
 ```
 
-**Pokretanje:**
+Pokretanje:
+
 ```powershell
 .\bin\ravenforge.exe pipeline run security-pipeline.yaml \
   --input logs=todays-logs.jsonl
 ```
 
-Jedan command → Kompletan sigurnosni pregled!
+Jedna naredba → kompletan sigurnosni pregled.
 
 ---
 
-## 🎓 Kada Koristiti Koji Tool?
+## Kada koristiti koji alat?
 
-| Tool | Kada Koristiti | Primer |
+| Alat | Kada koristiti | Primjer |
 |------|----------------|--------|
-| **ingest-jsonlines** | Imaš JSON/JSONL logove | Nginx, Apache, app logs |
-| **detect-simple-rules** | Trebaš custom detection pravila | Tvoji specifični napadi |
-| **enrich-geoip** | Hoćeš da znaš odakle dolaze napadi | IP → Država/Grad |
-| **correlate-events** | Hoćeš da vidiš pun incident, ne pojedinačne alerte | 10 alertova → 1 incident |
-| **triage-prioritize** | Imaš 50 incidenta, ne znaš koji je najvažniji | Automatsko prioritizovanje |
-| **report-generate** | Moraš da predstaviš šefu/klijentu | Executive summary |
+| ingest-jsonlines | Imaš JSON/JSONL logove | Nginx, Apache, aplikacijski logovi |
+| detect-simple-rules | Trebaju ti prilagođena pravila detekcije | tvoji specifični napadi |
+| enrich-geoip | Želiš znati odakle dolaze napadi | IP → država/grad |
+| correlate-events | Želiš vidjeti cijeli incident, ne pojedinačne alarme | 10 alarma → 1 incident |
+| triage-prioritize | Imaš 50 incidenata i ne znaš što je najvažnije | automatsko prioritiziranje |
+| report-generate | Moraš izvijestiti šefa/klijenta | sažetak za rukovodstvo |
 
 ---
 
-## 💡 Real-World Use Cases
+## Primjeri iz stvarnog svijeta
 
-### 1. **Startup Sa Jednim DevOps-om**
-```
-Problem: Nemaš dedicated security tim
-Rešenje: RavenForge automatizuje 90% SOC poslova
-Cena: $0 (open-source)
-```
+### 1) Startup s jednim DevOpsom
 
-### 2. **Kompanija Sa Compliance Zahtevima**
 ```
-Problem: PCI-DSS/GDPR/ISO27001 zahtevaju audit trail
-Rešenje: RavenForge sve loguje sa cryptographic chain
+Problem: nemaš dedicated sigurnosni tim
+Rješenje: RavenForge automatizira 90% SOC poslova
+Cijena: 0 USD (open-source)
 ```
 
-### 3. **Security Consultant**
+### 2) Tvrtka sa zahtjevima usklađenosti
+
 ```
-Problem: Analiziraš infrastrukturu različitih klijenata
-Rešenje: Isti tools, custom pravila po klijentu
+Problem: PCI-DSS/GDPR/ISO27001 traže audit trail
+Rješenje: RavenForge sve bilježi uz kriptografski lanac
 ```
 
-### 4. **Pentester**
+### 3) Sigurnosni konzultant
+
 ```
-Problem: Posle testa moraš napraviti detaljan izveštaj
-Rešenje: Feed attack logs → auto-generisan report
+Problem: analiziraš infrastrukturu različitih klijenata
+Rješenje: isti alati, prilagođena pravila po klijentu
 ```
 
-### 5. **SOC Analyst**
+### 4) Pentester
+
 ```
-Problem: 500 alertova dnevno, 90% false positives
-Rešenje: Korelacija smanjuje na 20 pravih incidenta
+Problem: nakon testa moraš napisati detaljno izvješće
+Rješenje: ubaci napadačke logove → automatski generirano izvješće
+```
+
+### 5) SOC analitičar
+
+```
+Problem: 500 alarma dnevno, 90% lažno pozitivnih
+Rješenje: korelacija smanjuje na 20 stvarnih incidenata
 ```
 
 ---
 
-## 🔧 Kako Prilagoditi Za Sebe?
+## Kako prilagoditi za sebe?
 
-### Napravi Custom Tool
+### Napravi vlastiti alat
+
 ```bash
 .\bin\ravenforge.exe tool scaffold my-custom-detector --category detect
 ```
 
-### Dodaj Svoja Pravila
-Edituj `detection-rules.yaml` sa svojim pravilima:
+### Dodaj vlastita pravila
+
+Uredi `detection-rules.yaml` sa svojim pravilima:
+
 ```yaml
 - id: my-attack-pattern
-  name: Moj Specifičan Napad
+  name: Moj specifičan obrazac napada
   severity: high
   conditions:
     - field: url
       regex: "/admin/backdoor"
 ```
 
-### Integriši Sa Postojećim Sistemima
-- Input: SIEM exporti, syslog, CloudWatch logs
-- Output: Slack notifications, Jira tickets, Email alerts
+### Integriraj s postojećim sustavima
+
+- Ulaz: SIEM izvozi, syslog, CloudWatch logovi
+- Izlaz: Slack obavijesti, Jira zadaci, e-mail upozorenja
 
 ---
 
-## 📊 Benefiti
+## Prednosti
 
-✅ **Vreme:** 3 sata ručnog rada → 5 minuta automatski  
-✅ **Detekcija:** 60% manual catch rate → 99% automatic  
-✅ **Cost:** $50k SIEM license → $0 open-source  
-✅ **Customization:** Zatvoreni vendor tools → Full control  
-✅ **Scale:** 1000 events/day ručno → 1M events/day automatski  
-
----
-
-## 🎯 Zaključak
-
-**RavenForge je za tebe ako:**
-- ✅ Analiziraš server/app logove
-- ✅ Radiš u security/DevSecOps
-- ✅ Trebaš compliance audit trail
-- ✅ Hoćeš da automatizuješ SOC operacije
-- ✅ Gradiš custom security monitoring
-
-**Nije ti potreban ako:**
-- ❌ Nemaš nikakve logove za analizu
-- ❌ Već imaš skup SIEM koji ti odgovara
-- ❌ Ne radiš ništa sa security monitoring-om
+- Vrijeme: 3 sata ručnog rada → 5 minuta automatizirano
+- Detekcija: 60% ručno → 99% automatski
+- Trošak: 50 000 USD SIEM licenca → 0 USD open-source
+- Prilagodba: zatvoreni vendor alati → puna kontrola
+- Skaliranje: 1000 događaja/dan ručno → 1 000 000 događaja/dan automatizirano
 
 ---
 
-## 📞 Dalje Korake
+## Zaključak
 
-1. **Testiraj sa svojim logovima:** Zameni `real-world-logs.jsonl` sa svojim
-2. **Prilagodi pravila:** Edituj `detection-rules.yaml`
-3. **Napravi pipeline:** Za svoj dnevni workflow
-4. **Automatizuj:** Pokreni kao cron job / scheduled task
-5. **Dodaj alert notifikacije:** Integriši sa Slack/Email
+RavenForge je za tebe ako:
 
-**Pitanja?** Pogledaj [ARCHITECTURE.md](../docs/ARCHITECTURE.md) i [TOOL_DEVELOPMENT.md](../docs/TOOL_DEVELOPMENT.md)
+- analiziraš server/aplikacijske logove
+- radiš u sigurnosti / DevSecOps-u
+- trebaš audit trag za usklađenost
+- želiš automatizirati SOC operacije
+- gradiš prilagođeno sigurnosno nadziranje
+
+Nije ti potreban ako:
+
+- nemaš logove za analizu
+- već imaš skupi SIEM koji ti odgovara
+- ne radiš ništa sa sigurnosnim nadziranjem
+
+---
+
+## Sljedeći koraci
+
+1. Testiraj sa svojim logovima: zamijeni `real-world-logs.jsonl` svojim logovima
+2. Prilagodi pravila: uredi `detection-rules.yaml`
+3. Napravi cjevovod: za svoj dnevni workflow
+4. Automatiziraj: pokreni kao cron job / scheduled task
+5. Dodaj obavijesti: integriraj sa Slackom / e-mailom
+
+Pitanja? Pogledaj [ARCHITECTURE.md](../docs/ARCHITECTURE.md) i [TOOL_DEVELOPMENT.md](../docs/TOOL_DEVELOPMENT.md)
